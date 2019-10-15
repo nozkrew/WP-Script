@@ -22,15 +22,18 @@ class CreateVideoHTMLCommand extends Command{
 
     protected function configure()
     {
-        $this->addArgument('requete-cible', InputArgument::REQUIRED, "Requêtes cible");        
+        $this->addArgument('requete-cible', InputArgument::REQUIRED, "Requêtes cible");      
+		$this->addArgument('category', InputArgument::REQUIRED, "Categorie"); 		
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('Requete cible: '.$input->getArgument('requete-cible'));
+		$output->writeln('Catégorie: '.$input->getArgument('category'));
         $output->writeln('');
 
         $requete = $input->getArgument('requete-cible');
+		$category = $input->getArgument('category');
         
         //Retirer cette adresse pour utiliser celle en paramètre
         $this->urlExcel = __DIR__."/../../files/KeyWords Party Porn.xlsx";
@@ -63,7 +66,7 @@ class CreateVideoHTMLCommand extends Command{
         );
         
         $html = "";
-        $html .= "<p>Watch ".$requete." video</p>";
+        $html .= "<p>Watch <b>".$requete."</b> video</p>";
         
         $transitionsCounter = 1;
         
@@ -86,7 +89,13 @@ class CreateVideoHTMLCommand extends Command{
             for($w = 1; $w <= 30; $w++){
                 $rand = rand (2, $max);
                 $word = $spreadsheet->getActiveSheet()->getCell('A'.$rand)->getValue();
-                $html .= $word." ";
+				
+				if($transitionsCounter == 40){
+					$html .= "<a href='https://10minutesparty.com/category/".$category."/'>".$word."</a> ";
+				}
+				else{
+					$html .= $word." ";
+				}                
                 
                 //Ajout d'un retour à la ligne
                 if($w % 3 == 0){
@@ -99,11 +108,12 @@ class CreateVideoHTMLCommand extends Command{
                 }
                 
                 $transitionsCounter++;
+				
             }
             $html .= '</p>';
         }
         
-        $html .= "<p>".$requete."</p>";
+        $html .= "<p><b>".$requete."</b></p>";
         
         $output->writeln($html);
     }
